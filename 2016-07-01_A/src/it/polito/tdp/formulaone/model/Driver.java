@@ -100,4 +100,9 @@ public class Driver {
 		this.url = url;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s: %s %s ", driverId, forename, surname);
+	}
+
 }

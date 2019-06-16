@@ -6,18 +6,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.tdp.formulaone.model.Circuit;
 import it.polito.tdp.formulaone.model.Constructor;
+import it.polito.tdp.formulaone.model.Driver;
 import it.polito.tdp.formulaone.model.Season;
+import it.polito.tdp.formulaone.model.Vittoria;
 
 
 public class FormulaOneDAO {
 
 	public List<Integer> getAllYearsOfRace() {
 		
-		String sql = "SELECT year FROM races ORDER BY year" ;
+		String sql = "SELECT DISTINCT year FROM races ORDER BY year" ;
 		
 		try {
 			Connection conn = ConnectDB.getConnection() ;
@@ -106,6 +110,69 @@ public class FormulaOneDAO {
 
 			conn.close();
 			return constructors;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("SQL Query Error");
+		}
+	}
+
+	public List<Driver> getDriver(Integer anno) {
+		String sql = "SELECT DISTINCT d.* " + 
+				"FROM results AS re, races AS ra, drivers AS d " + 
+				"WHERE d.driverId = re.driverId " + 
+				"AND ra.raceId = re.raceId " +
+				"AND re.position is not null "+  //cosi considero solo i piloti che hanno terminato la gara
+				"AND ra.YEAR = ? ";
+		
+		List<Driver> list = new ArrayList<>();
+		try {
+			Connection conn = ConnectDB.getConnection();
+
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, anno);
+			ResultSet rs = st.executeQuery();
+
+			
+			while (rs.next()) {
+				Driver d = new Driver(rs.getInt("driverId"), rs.getString("driverRef"), rs.getInt("number"), 
+						rs.getString("code"), rs.getString("forename"), rs.getString("surname"), 
+						rs.getDate("dob").toLocalDate(), rs.getString("nationality"), rs.getString("url"));
+				list.add(d);
+			}
+
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("SQL Query Error");
+		}
+	}
+
+	public List<Vittoria> getVittorie(Integer anno) {
+		String sql = "SELECT re1.driverId AS d1, re2.driverId AS d2, COUNT(races.raceId) AS cnt " + 
+				"FROM results AS re1, results AS re2, races " + 
+				"WHERE  races.raceId = re1.raceId " + 
+				"AND re1.raceId = re2.raceId " + 
+				"AND re1.driverId <> re2.driverId " +
+				"AND re1.position < re2.position " +  //id1 vince su id2
+				"AND races.YEAR = ? " + 
+				"GROUP BY d1, d2";
+		List<Vittoria> list = new ArrayList<>();
+		try {
+			Connection conn = ConnectDB.getConnection();
+
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, anno);
+			ResultSet rs = st.executeQuery();
+
+			
+			while (rs.next()) {
+				Vittoria v = new Vittoria(rs.getInt("d1"), rs.getInt("d2"),rs.getInt("cnt"));
+				list.add(v);
+			}
+
+			conn.close();
+			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException("SQL Query Error");

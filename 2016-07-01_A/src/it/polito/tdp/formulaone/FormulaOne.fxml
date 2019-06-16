@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.formulaone.FormulaOneController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.formulaone.FormulaOneController">
    <top>
       <Label text="Formula 1 (Esame 01/07/2016 _Tema_A)" BorderPane.alignment="CENTER" />
    </top>
@@ -30,7 +30,7 @@
                         <Insets left="20.0" />
                      </HBox.margin>
                   </ComboBox>
-                  <Button mnemonicParsing="false" onAction="#doCreaGrafo" text="Vittorie piloti">
+                  <Button fx:id="btnVittorie" mnemonicParsing="false" onAction="#doCreaGrafo" text="Vittorie piloti">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin>
@@ -49,7 +49,7 @@
                         <Insets left="20.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button mnemonicParsing="false" onAction="#doTrovaDreamTeam" text="DreamTeam">
+                  <Button fx:id="btnDream" mnemonicParsing="false" onAction="#doTrovaDreamTeam" text="DreamTeam">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin>
